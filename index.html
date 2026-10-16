@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>N.E.M.O.</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="main-container">
+        <h1>N.E.M.O.</h1>
+        <h2>navegador eletronico de monitoramento dos oceanos</h2>
+        <div class="controls">
+            <button class="btn" onclick="initcamera()" >1. Iniciar câmera</button>
+            <button class="btn" onclick="conectarArduino()">2. Conectar Arduino</button>
+        </div>
+        <div class="status" id="status-conexao">Status: Aguardando conexão...</div>
+        <div class="dashboard-layout">
+            <div class="ai-section">
+                <h2 style="font-size: 18px; color: #333; margin-top: 0;">Análise Visual (Teachable Machine)</h2>
+                <div id="webcam-container"></div>
+                <div id="label-container"></div>
+            </div>
+            <div class="sensors-section">
+                <h2 style="font-size: 18px; color: #333; margin-top: 0;">Análise de Sensores</h2>
+                <div class="grid-sensors">
+                    <div class="card">
+                        <h3>TEMPERATURA</h3>
+                        <div class="valor"><span id="temp">--</span> °C</div>
+                    </div>
+                    <div class="card">
+                        <h3>pH da agua</h3>
+                        <div class="valor"><span id="ph">--</span> </div>
+                    </div>
+                    <div class="card">
+                        <h3>TDS(solidos dissolvidos)</h3>
+                        <div class="valor"><span id="tds">--</span> ppm</div>
+                    </div>
+                    <div class="card">
+                        <h3>TURBIDEZ</h3>
+                        <div class="valor"><span id="turb">--</span> NTU</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+    </div>
+</body>
+</html>
