@@ -2,6 +2,8 @@ const max_data = 10; // Número máximo de dados a serem armazenados
 
 function criarGrafico(ctxId, label, color) {
     const ctx = document.getElementById(ctxId).getContext('2d');
+    const backgroundColor = color.replace(/[\d\.]+\)$/g, '0.2)');
+
     return new Chart(ctx, {
         type: 'line',
         data: {
@@ -10,10 +12,10 @@ function criarGrafico(ctxId, label, color) {
                 label: label,
                 data: [],
                 borderColor: color,
-                backgroundColor: color + '22', // Adiciona transparência
+                backgroundColor: backgroundColor, // Cor de fundo corrigida com transparência correta
                 borderWidth: 2,
                 fill: true,
-                tension: '0.3'
+                tension: 0.3 // Removido aspas desnecessárias (deveria ser número)
             }]
         },
         options: {
@@ -27,10 +29,10 @@ function criarGrafico(ctxId, label, color) {
     });
 }
 
-const graficoTemp = criarGrafico('graficoTemp', 'Temperatura (°C)', '#e63946');
-const graficoPh = criarGrafico('graficoPh', 'pH da água', '#2a9d8f');
-const graficoTds = criarGrafico('graficoTds', 'TDS (ppm)', '#e76f51');
-const graficoTurb = criarGrafico('graficoTurb', 'Turbidez (NTU)', '#0077b6');
+const graficoTemp = criarGrafico('graficoTemp', 'Temperatura (°C)', '#df5a65');
+const graficoPh = criarGrafico('graficoPh', 'pH da água', '#30c0af');
+const graficoTds = criarGrafico('graficoTds', 'TDS (ppm)', '#e6836b');
+const graficoTurb = criarGrafico('graficoTurb', 'Turbidez (NTU)', '#0794e0');
 
 function adicionarDado(grafico, valor) {
     const horaAtual = new Date().toLocaleTimeString();
