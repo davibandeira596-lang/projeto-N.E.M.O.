@@ -8,43 +8,65 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="main-container">
+    <div class="caixa-principal">
         <h1>N.E.M.O.</h1>
         <h2>navegador eletronico de monitoramento dos oceanos</h2>
-        <div class="controls">
+        <div class="controles">
             <button class="btn" onclick="initcamera()" >1. Iniciar câmera</button>
             <button class="btn" onclick="conectarArduino()">2. Conectar Arduino</button>
         </div>
         <div class="status" id="status-conexao">Status: Aguardando conexão...</div>
-        <div class="dashboard-layout">
-            <div class="ai-section">
+        <div class="layout-do-dashboard">
+            <div class="seçao-IA">
                 <h2 style="font-size: 18px; color: #333; margin-top: 0;">Análise Visual (Teachable Machine)</h2>
-                <div id="webcam-container"></div>
-                <div id="label-container"></div>
+                <div id="caixa-webcam"></div>
+                <div id="legenda"></div>
             </div>
-            <div class="sensors-section">
+            <div class="seçao-sensores">
                 <h2 style="font-size: 18px; color: #333; margin-top: 0;">Análise de Sensores</h2>
-                <div class="grid-sensors">
-                    <div class="card">
+                <div class="grade-sensores">
+                    <div class="cartao">
                         <h3>TEMPERATURA</h3>
                         <div class="valor"><span id="temp">--</span> °C</div>
                     </div>
-                    <div class="card">
+                    <div class="cartao">
                         <h3>pH da agua</h3>
                         <div class="valor"><span id="ph">--</span> </div>
                     </div>
-                    <div class="card">
+                    <div class="cartao">
                         <h3>TDS(solidos dissolvidos)</h3>
                         <div class="valor"><span id="tds">--</span> ppm</div>
                     </div>
-                    <div class="card">
+                    <div class="cartao">
                         <h3>TURBIDEZ</h3>
                         <div class="valor"><span id="turb">--</span> NTU</div>
                     </div>
                 </div>
             </div>
         </div>
-        
+        <div class="seçao-graficos">
+            <h2 style="font-size: 18px; color: #333; margin-top: 0; text-align: center; margin-bottom: 20px;">Gráficos</h2>
+            <div class="grade-graficos">
+                <div class="grafico">
+                    <canvas id="grafico-temperatura"></canvas>
+                </div>
+                <div class="grafico">
+                    <canvas id="grafico-ph"></canvas>
+                </div>
+                <div class="grafico">
+                    <canvas id="grafico-tds"></canvas>
+                </div>
+                <div class="grafico">
+                    <canvas id="grafico-turbidez"></canvas>
+                </div>
+            </div>
+        </div>
     </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest/dist/tf.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@latest/dist/teachablemachine-image.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <script src="script.js"></script>
 </body>
 </html>
