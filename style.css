@@ -60,7 +60,7 @@
             text-align: center;
             margin-bottom: 25px;
             font-size: 14px;
-            color: #333;
+            color: #666;
         }
         .layout-do-dashboard {
             display: grid;
@@ -74,10 +74,10 @@
             }
         }
         .seçao-IA {
-            background-color: #e0f7fa;
+            background-color: #fafafa;
             padding: 20px;
             border-radius: 8px;
-            border: 1px solid #b2ebf2;
+            border: 1px solid #e0e0e0;
             text-align: center;
         }
         #legenda {
@@ -95,7 +95,7 @@
             padding: 8px 12px;
             border-radius: 6px;
             margin-bottom: 6px;
-            border: 1px solid #b2ebf2;
+            border: 1px solid #ddd;
             font-size: 14px;
             font-weight: 500;
         }
@@ -105,27 +105,27 @@
             grid-template-columns: repeat(2, 1fr);
         }
         .cartao {
-            background-color: #e0f7fa;
+            background-color: #eef4f8;
             padding: 18px;
             border-radius: 8px;
-            border: 5px solid #b2ebf2;
+            border: 5px solid #0077b6;
             text-align: center;
         }
         .cartao h3 {
             margin: 0 0 8px 0;
             font-size: 13px;
-            color: #0077b6;
+            color: #555;
         }
         .cartao .valor {
             font-size: 20px;
             font-weight: bold;
-            color: #333;
+            color: #1d3557;
         }
         .seçao-graficos {
-            background-color: #e0f7fa;
+            background-color: #ffffff;
             padding: 20px;
             border-radius: 8px;
-            border: 1px solid #b2ebf2;
+            border: 1px solid #e0e0e0;
         }
         .grade-graficos {
             display: grid;
