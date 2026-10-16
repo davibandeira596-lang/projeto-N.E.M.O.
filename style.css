@@ -11,7 +11,7 @@
             min-height: 100vh;
             padding: 20px;
         }
-        .main-container {
+        .caixa-principal {
             background-color: #fff;
             padding: 30px;
             border-radius: 12px;
@@ -19,15 +19,126 @@
             max-width: 1100px;
             width: 100%;
         }
+        .logo {
+            display: flex;
+            flex-direction: column;
+            align-items: center;  
+            justify-content: center;
+            text-align: center;     
+            width: 35%;          
+            margin-bottom: 20px;
+            margin: 0 auto 20px auto;
+        }
         h1, h2 {
             color: #0077b6;
             text-align: center;
             margin-bottom: 20px;
         }
-        .controls {
+        .controles {
             display: flex;
             justify-content: center;
             margin-bottom: 20px;
             gap: 15px;
             flex-wrap: wrap;
+        }
+        .btn {
+            background-color: #0077b6;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 15px;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            font-weight: bold;
+        }
+        .btn:hover {
+            background-color: #005f8a;
+            transform: translateY(-2px);
+        }
+        .status {
+            text-align: center;
+            margin-bottom: 25px;
+            font-size: 14px;
+            color: #333;
+        }
+        .layout-do-dashboard {
+            display: grid;
+            gap: 25px;
+            grid-template-columns: 1fr 1.2fr;
+            margin-bottom: 30px;
+        }
+        @media (max-width: 768px) {
+            .layout-do-dashboard {
+                grid-template-columns: 1fr;
+            }
+        }
+        .seçao-IA {
+            background-color: #e0f7fa;
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid #b2ebf2;
+            text-align: center;
+        }
+        #legenda {
+            margin-top: 15px;
+            text-align: left;
+        }
+        #caixa-webcam canvas {
+            max-width: 100%;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            margin-top: 10px;
+        }
+        .legenda-item {
+            background:#fff;
+            padding: 8px 12px;
+            border-radius: 6px;
+            margin-bottom: 6px;
+            border: 1px solid #b2ebf2;
+            font-size: 14px;
+            font-weight: 500;
+        }
+        .grade-sensores {
+            display: grid;
+            gap: 15px;
+            grid-template-columns: repeat(2, 1fr);
+        }
+        .cartao {
+            background-color: #e0f7fa;
+            padding: 18px;
+            border-radius: 8px;
+            border: 5px solid #b2ebf2;
+            text-align: center;
+        }
+        .cartao h3 {
+            margin: 0 0 8px 0;
+            font-size: 13px;
+            color: #0077b6;
+        }
+        .cartao .valor {
+            font-size: 20px;
+            font-weight: bold;
+            color: #333;
+        }
+        .seçao-graficos {
+            background-color: #e0f7fa;
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid #b2ebf2;
+        }
+        .grade-graficos {
+            display: grid;
+            gap: 20px;
+            grid-template-columns: repeat(2, 1fr);
+        }
+        @media (max-width: 768px) {
+            .grade-graficos {
+                grid-template-columns: 1fr;
+            }
+        }
+        .grafico {
+            position: relative;
+            height: 220px;
+            width: 100%;
         }
