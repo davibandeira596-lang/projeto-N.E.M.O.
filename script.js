@@ -27,10 +27,10 @@ function criarGrafico(ctxId, label, color) {
     });
 }
 
-const graficoTemp = criarGrafico('graficoTemp', 'Temperatura (°C)', 'rgba(255, 99, 132, 1)');
-const graficoPh = criarGrafico('graficoPh', 'pH da água', 'rgba(54, 162, 235, 1)');
-const graficoTds = criarGrafico('graficoTds', 'TDS (ppm)', 'rgba(75, 192, 192, 1)');
-const graficoTurb = criarGrafico('graficoTurb', 'Turbidez (NTU)', 'rgba(153, 102, 255, 1)');
+const graficoTemp = criarGrafico('graficoTemp', 'Temperatura (°C)', '#e63946');
+const graficoPh = criarGrafico('graficoPh', 'pH da água', '#2a9d8f');
+const graficoTds = criarGrafico('graficoTds', 'TDS (ppm)', '#e76f51');
+const graficoTurb = criarGrafico('graficoTurb', 'Turbidez (NTU)', '#0077b6');
 
 function adicionarDado(grafico, valor) {
     const horaAtual = new Date().toLocaleTimeString();
