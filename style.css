@@ -142,3 +142,12 @@
             height: 220px;
             width: 100%;
         }
+        #entrada-url {
+            width: 100%;
+            max-width: 500px;
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            font-size: 14px;
+            margin-bottom: 15px;
+        }
