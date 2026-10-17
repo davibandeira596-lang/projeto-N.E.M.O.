@@ -12,26 +12,26 @@ function criarGrafico(ctxId, label, color) {
                 label: label,
                 data: [],
                 borderColor: color,
-                backgroundColor: backgroundColor, // Cor de fundo corrigida com transparência correta
+                backgroundColor: backgroundColor,
                 borderWidth: 2,
                 fill: true,
-                tension: 0.3 // Removido aspas desnecessárias (deveria ser número)
+                tension: 0.3
             }]
         },
         options: {
             responsive: true,
             maintainAspectRatio: false,
             scales: {
-                x: {display: true, title: {display: false }},
-                y: {beginAtZero: false }
+                x: { display: true, title: { display: false } },
+                y: { beginAtZero: false }
             }
         }
     });
 }
 
 const graficoTemp = criarGrafico('graficoTemp', 'Temperatura (°C)', '#df5a65');
-const graficoPh = criarGrafico('graficoPh', 'pH da água', '#30c0af');
-const graficoTds = criarGrafico('graficoTds', 'TDS (ppm)', '#e6836b');
+const graficoPh   = criarGrafico('graficoPh', 'pH da água', '#30c0af');
+const graficoTds  = criarGrafico('graficoTds', 'TDS (ppm)', '#e6836b');
 const graficoTurb = criarGrafico('graficoTurb', 'Turbidez (NTU)', '#0794e0');
 
 function adicionarDado(grafico, valor) {
@@ -45,18 +45,37 @@ function adicionarDado(grafico, valor) {
     grafico.update();
 }
 
-const modelo_url = "./my_model/"; // Substitua pelo caminho correto do seu modelo
-let modelo, webcam, labelContainer, maxPredictions;
+const modelo_url_padrao = "./my_model/"; // Caminho local padrão
+let modelo, webcam, caixalegenda, maxPredictions;
+
+document.addEventListener("DOMContentLoaded", () => {
+    const salvarUrl = localStorage.getItem("modelo_url");
+    if (salvarUrl) {
+        document.getElementById("entrada-url").value = salvarUrl;
+    }
+});
 
 async function inicCamera() {
-    const caminhoModelo = modelo_url + "model.json";
-    const caminhometadata = modelo_url + "metadata.json";
+    let usuarioUrl = document.getElementById("entrada-url").value.trim();
+
+    if (!usuarioUrl) {
+        usuarioUrl = modelo_url_padrao; 
+    } else {
+        if (!usuarioUrl.endsWith("/")) {
+            usuarioUrl += "/";
+        }
+        localStorage.setItem("modelo_url", usuarioUrl);
+    }
+
+    // CORREÇÃO: Agora os caminhos usam a variável usuarioUrl
+    const caminhoModelo = usuarioUrl + "model.json";
+    const caminhometadata = usuarioUrl + "metadata.json";
     
     try {
         modelo = await tmImage.load(caminhoModelo, caminhometadata);
         maxPredictions = modelo.getTotalClasses();
 
-        const flip = true; // Inverter a imagem da webcam
+        const flip = true; 
         webcam = new tmImage.Webcam(240, 240, flip);
         await webcam.setup();
         await webcam.play();
@@ -73,9 +92,14 @@ async function inicCamera() {
             elemento.className = "legenda-item";
             caixalegenda.appendChild(elemento);
         }
+
+        const statusConexao = document.getElementById("status-conexao");
+        statusConexao.innerText = "Status: Câmera e Modelo de IA iniciados com sucesso!";
+        statusConexao.style.color = "green";
+
     } catch (error) {
-        console.error("Erro ao inicializar teachable machine:", error);
-        alert("Erro ao carregar o modelo de aprendizado de máquina. Verifique a pasta do modelo e tente novamente.");
+        console.error("Erro ao inicializar Teachable Machine:", error);
+        alert("Erro ao carregar o modelo de aprendizado de máquina. Verifique o link informado e certifique-se de que é um link público do Teachable Machine.");
     }
 }
 
@@ -86,17 +110,21 @@ async function loopcamera() {
 }
 
 async function preverImagem() {
+    if (!modelo || !caixalegenda) return;
+    
     const previsoes = await modelo.predict(webcam.canvas);
     for (let i = 0; i < maxPredictions; i++) {
         const porcentagem = (previsoes[i].probability * 100).toFixed(0);
         const previsaoclasse = `${previsoes[i].className}: ${porcentagem}%`;
-        caixalegenda.childNodes[i].innerHTML = previsaoclasse;
+        if (caixalegenda.childNodes[i]) {
+            caixalegenda.childNodes[i].innerHTML = previsaoclasse;
+        }
     }
 }
 
 async function conectarArduino() {
     if (!("serial" in navigator)) {
-        alert("API Serial não suportada neste navegador.");
+        alert("API Serial não suportada neste navegador. Utilize Google Chrome, Microsoft Edge ou Brave.");
         return;
     }
 
@@ -130,19 +158,19 @@ async function conectarArduino() {
 
                         if (dados.temp !== undefined) {
                             document.getElementById("temp").innerText = dados.temp;
-                            adicionarDado(graficoTemp, (dados.temp));
+                            adicionarDado(graficoTemp, dados.temp);
                         }
                         if (dados.ph !== undefined) {
                             document.getElementById("ph").innerText = dados.ph;
-                            adicionarDado(graficoPh, (dados.ph));
+                            adicionarDado(graficoPh, dados.ph);
                         }
                         if (dados.tds !== undefined) {
                             document.getElementById("tds").innerText = dados.tds;
-                            adicionarDado(graficoTds, (dados.tds));
+                            adicionarDado(graficoTds, dados.tds);
                         }
                         if (dados.turb !== undefined) {
                             document.getElementById("turb").innerText = dados.turb;
-                            adicionarDado(graficoTurb, (dados.turb));
+                            adicionarDado(graficoTurb, dados.turb);
                         }
                     } catch (e) {
                         console.warn("Erro ao analisar JSON:", e);
@@ -153,8 +181,7 @@ async function conectarArduino() {
     } catch (error) {
         console.error("Erro ao conectar ao Arduino:", error);
         const statusConexao = document.getElementById("status-conexao");
-        statusConexao.innerText = "Status: Erro na conexão";
+        statusConexao.innerText = "Status: Erro na conexão com o Arduino";
         statusConexao.style.color = "red";
     }
 }
-
