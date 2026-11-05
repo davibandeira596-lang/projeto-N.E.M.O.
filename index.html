@@ -11,13 +11,14 @@
     <div class="caixa-principal">
         <img src="logo.png" alt="Logo do N.E.M.O." class="logo" />
         <h1>N.E.M.O.</h1>
-        <h2>Navegador Eletrônico para Monitoramento dos Oceanos</h2>
+        <h2>Navegador Eletrónico para Monitoramento dos Oceanos</h2>
         <div class="controles">
-            <input type="text" id="entrada-url" placeholder="cole o link do teacheable machine aqui" />
-            <button class="btn" onclick="inicCamera()" >1. Iniciar câmera</button>
+            <input type="text" id="entrada-url" placeholder="cole o link do teachable machine aqui" />
+            <button class="btn" onclick="inicCamera()">1. Iniciar câmara</button>
             <button class="btn" onclick="conectarArduino()">2. Conectar Arduino</button>
+            <button class="btn btn-csv" onclick="exportarCSV()">3. Baixar CSV</button>
         </div>
-        <div class="status" id="status-conexao">Status: Aguardando conexão...</div>
+        <div class="status" id="status-conexao">Status: Aguardando ligação...</div>
         <div class="layout-do-dashboard">
             <div class="seçao-IA">
                 <h2 style="font-size: 18px; color: #333; margin-top: 0;">Análise Visual (Teachable Machine)</h2>
@@ -32,11 +33,11 @@
                         <div class="valor"><span id="temp">--</span> °C</div>
                     </div>
                     <div class="cartao">
-                        <h3>pH da agua</h3>
-                        <div class="valor"><span id="ph">--</span> </div>
+                        <h3>pH da água</h3>
+                        <div class="valor"><span id="ph">--</span></div>
                     </div>
                     <div class="cartao">
-                        <h3>TDS(solidos dissolvidos)</h3>
+                        <h3>TDS (sólidos dissolvidos)</h3>
                         <div class="valor"><span id="tds">--</span> ppm</div>
                     </div>
                     <div class="cartao">
@@ -47,7 +48,7 @@
             </div>
         </div>
         <div class="seçao-graficos">
-            <h2 style="font-size: 18px; color: #333; margin-top: 0; text-align: center; margin-bottom: 20px;">Gráficos</h2>
+            <h2 style="font-size: 18px; color: #333; margin-top: 0; text-align: center; margin-bottom: 20px;">Gráficos em Tempo Real</h2>
             <div class="grade-graficos">
                 <div class="grafico">
                     <canvas id="graficoTemp"></canvas>
