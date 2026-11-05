@@ -2,7 +2,7 @@
 #include <DallasTemperature.h>
 
 // Definição dos Pinos de Hardware
-const int PIN_DS18B20 = 2;   // Digital: DS18B20 (Temperatura)
+const int PIN_DS18B20 = 2;   // Digital: DS18B20 (Temperatura - com módulo adaptador)
 const int PIN_TDS     = A1;  // Analógico: TDS V1.0
 const int PIN_PH      = A2;  // Analógico: pH-4502C
 const int PIN_TURBID  = A3;  // Analógico: ST100 (Turbidez)
@@ -28,7 +28,6 @@ float lerAnalogicoMedio(int pino, int amostras = 5) {
 }
 
 void setup() {
-  // Exigido pelo script.js do site
   Serial.begin(9600);
   sensors.begin();
   
@@ -50,32 +49,35 @@ void loop() {
       temperaturaGlobal = tempC;
     }
 
-    // 2. TDS (com filtro e compensação térmica)
+    // 2. TDS (com compensação térmica)
     float leituraTDS_raw = lerAnalogicoMedio(PIN_TDS);
     float tensaoTDS = leituraTDS_raw * (5.0 / 1023.0);
     float tensaoCompensadaTDS = tensaoTDS / (1.0 + 0.02 * (temperaturaGlobal - 25.0));
     float valorTDS = (133.42 * pow(tensaoCompensadaTDS, 3) - 255.86 * pow(tensaoCompensadaTDS, 2) + 857.39 * tensaoCompensadaTDS) * 0.5;
     if (valorTDS < 0) valorTDS = 0;
 
-    // 3. pH (com amostragem suave)
+    // 3. pH
     float leituraPH_raw = lerAnalogicoMedio(PIN_PH);
     float tensaoPH = leituraPH_raw * (5.0 / 1023.0);
     float valorPH = 7.0 + ((2.5 - tensaoPH) / 0.18);
     if (valorPH < 0) valorPH = 0;
     if (valorPH > 14) valorPH = 14;
 
-    // 4. Turbidez (ST100 em NTU estimado)
+    // 4. Turbidez
     float leituraTurbid_raw = lerAnalogicoMedio(PIN_TURBID);
     float tensaoTurbidez = leituraTurbid_raw * (5.0 / 1023.0);
     float valorNTU = (5.0 - tensaoTurbidez) * 100.0;
     if (valorNTU < 0) valorNTU = 0;
 
-    // --- FORMATAÇÃO DE JSON SEM ALOCAÇÃO DINÂMICA DE MEMÓRIA ---
-    char bufferJson[128];
-    snprintf(bufferJson, sizeof(bufferJson),
-             "{\"temp\":%.1f,\"ph\":%.2f,\"tds\":%.1f,\"turb\":%.1f}",
-             temperaturaGlobal, valorPH, valorTDS, valorNTU);
+    // --- MONTAGEM DO JSON USANDO STRING (Compatível com floats no AVR) ---
+    String jsonStr = "{";
+    jsonStr += "\"temp\":" + String(temperaturaGlobal, 1) + ",";
+    jsonStr += "\"ph\":" + String(valorPH, 2) + ",";
+    jsonStr += "\"tds\":" + String(valorTDS, 1) + ",";
+    jsonStr += "\"turb\":" + String(valorNTU, 1);
+    jsonStr += "}";
 
-    Serial.println(bufferJson);
+    // Envia o JSON limpo para a porta serial
+    Serial.println(jsonStr);
   }
 }
