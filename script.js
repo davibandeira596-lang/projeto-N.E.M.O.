@@ -1,4 +1,9 @@
-const max_data = 10; // Número máximo de dados a serem armazenados
+const max_data = 10; 
+const historicoLeituras = []; 
+
+let ultimoRecebimentoTempo = Date.now();
+let monitorConexaoTimer = null;
+let ultimosValoresValidos = { temp: null, ph: null, tds: null, turb: null };
 
 function criarGrafico(ctxId, label, color) {
     const ctx = document.getElementById(ctxId).getContext('2d');
@@ -45,7 +50,21 @@ function adicionarDado(grafico, valor) {
     grafico.update();
 }
 
-const modelo_url_padrao = "./my_model/"; // Caminho local padrão
+function validarDadoSemRuido(chave, valor, variacaoMaxima) {
+    if (ultimosValoresValidos[chave] === null) {
+        ultimosValoresValidos[chave] = valor;
+        return valor;
+    }
+    const diferenca = Math.abs(valor - ultimosValoresValidos[chave]);
+    if (diferenca > variacaoMaxima) {
+        console.warn(`Pico de ruído ignorado em ${chave}: valor ${valor}`);
+        return ultimosValoresValidos[chave];
+    }
+    ultimosValoresValidos[chave] = valor;
+    return valor;
+}
+
+const modelo_url_padrao = "./my_model/";
 let modelo, webcam, caixalegenda, maxPredictions;
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -67,7 +86,6 @@ async function inicCamera() {
         localStorage.setItem("modelo_url", usuarioUrl);
     }
 
-    // CORREÇÃO: Agora os caminhos usam a variável usuarioUrl
     const caminhoModelo = usuarioUrl + "model.json";
     const caminhometadata = usuarioUrl + "metadata.json";
     
@@ -94,12 +112,12 @@ async function inicCamera() {
         }
 
         const statusConexao = document.getElementById("status-conexao");
-        statusConexao.innerText = "Status: Câmera e Modelo de IA iniciados com sucesso!";
+        statusConexao.innerText = "Status: Câmara e Modelo de IA iniciados com sucesso!";
         statusConexao.style.color = "green";
 
     } catch (error) {
         console.error("Erro ao inicializar Teachable Machine:", error);
-        alert("Erro ao carregar o modelo de aprendizado de máquina. Verifique o link informado e certifique-se de que é um link público do Teachable Machine.");
+        alert("Erro ao carregar o modelo de inteligência artificial. Verifique o link informado.");
     }
 }
 
@@ -122,6 +140,20 @@ async function preverImagem() {
     }
 }
 
+function iniciarMonitorConexao() {
+    if (monitorConexaoTimer) clearInterval(monitorConexaoTimer);
+    
+    monitorConexaoTimer = setInterval(() => {
+        const tempoSemDados = Date.now() - ultimoRecebimentoTempo;
+        const statusConexao = document.getElementById("status-conexao");
+        
+        if (tempoSemDados > 3500) {
+            statusConexao.innerText = "Status: ⚠️ Ligação interrompida / Aguardando dados do Arduino...";
+            statusConexao.style.color = "orange";
+        }
+    }, 2000);
+}
+
 async function conectarArduino() {
     if (!("serial" in navigator)) {
         alert("API Serial não suportada neste navegador. Utilize Google Chrome, Microsoft Edge ou Brave.");
@@ -133,8 +165,11 @@ async function conectarArduino() {
         await porta.open({ baudRate: 9600 });
 
         const statusConexao = document.getElementById("status-conexao");
-        statusConexao.innerText = "Status: Conectado ao Arduino";
+        statusConexao.innerText = "Status: Conectado ao Arduino e a receber dados";
         statusConexao.style.color = "green";
+
+        ultimoRecebimentoTempo = Date.now();
+        iniciarMonitorConexao();
 
         const decodificador = new TextDecoderStream();
         porta.readable.pipeTo(decodificador.writable);
@@ -155,33 +190,83 @@ async function conectarArduino() {
                 if (linhaLimpa.startsWith("{") && linhaLimpa.endsWith("}")) {
                     try {
                         const dados = JSON.parse(linhaLimpa);
+                        ultimoRecebimentoTempo = Date.now();
+                        statusConexao.innerText = "Status: Conectado ao Arduino";
+                        statusConexao.style.color = "green";
+
+                        const dataHoraAtual = new Date();
+                        const timestamp = dataHoraAtual.toLocaleTimeString();
+
+                        const registroLeitura = {
+                            data: dataHoraAtual.toLocaleDateString(),
+                            hora: timestamp,
+                            temp: dados.temp,
+                            ph: dados.ph,
+                            tds: dados.tds,
+                            turb: dados.turb
+                        };
 
                         if (dados.temp !== undefined) {
-                            document.getElementById("temp").innerText = dados.temp;
-                            adicionarDado(graficoTemp, dados.temp);
+                            const tempFiltrada = validarDadoSemRuido('temp', dados.temp, 5.0);
+                            document.getElementById("temp").innerText = tempFiltrada;
+                            adicionarDado(graficoTemp, tempFiltrada);
+                            registroLeitura.temp = tempFiltrada;
                         }
+
                         if (dados.ph !== undefined) {
-                            document.getElementById("ph").innerText = dados.ph;
-                            adicionarDado(graficoPh, dados.ph);
+                            const phFiltrado = validarDadoSemRuido('ph', dados.ph, 3.0);
+                            document.getElementById("ph").innerText = phFiltrado;
+                            adicionarDado(graficoPh, phFiltrado);
+                            registroLeitura.ph = phFiltrado;
                         }
+
                         if (dados.tds !== undefined) {
-                            document.getElementById("tds").innerText = dados.tds;
-                            adicionarDado(graficoTds, dados.tds);
+                            const tdsFiltrado = validarDadoSemRuido('tds', dados.tds, 300.0);
+                            document.getElementById("tds").innerText = tdsFiltrado;
+                            adicionarDado(graficoTds, tdsFiltrado);
+                            registroLeitura.tds = tdsFiltrado;
                         }
+
                         if (dados.turb !== undefined) {
-                            document.getElementById("turb").innerText = dados.turb;
-                            adicionarDado(graficoTurb, dados.turb);
+                            const turbFiltrada = validarDadoSemRuido('turb', dados.turb, 100.0);
+                            document.getElementById("turb").innerText = turbFiltrada;
+                            adicionarDado(graficoTurb, turbFiltrada);
+                            registroLeitura.turb = turbFiltrada;
                         }
+
+                        historicoLeituras.push(registroLeitura);
+
                     } catch (e) {
-                        console.warn("Erro ao analisar JSON:", e);
+                        console.warn("Erro no parse JSON:", e);
                     }
                 }
             }
         }
     } catch (error) {
-        console.error("Erro ao conectar ao Arduino:", error);
+        console.error("Erro ao ligar ao Arduino:", error);
         const statusConexao = document.getElementById("status-conexao");
-        statusConexao.innerText = "Status: Erro na conexão com o Arduino";
+        statusConexao.innerText = "Status: Erro de ligação com o Arduino";
         statusConexao.style.color = "red";
     }
+}
+
+function exportarCSV() {
+    if (historicoLeituras.length === 0) {
+        alert("Nenhum dado recolhido para exportação.");
+        return;
+    }
+
+    let csvConteudo = "data:text/csv;charset=utf-8,Data,Hora,Temperatura (C),pH,TDS (ppm),Turbidez (NTU)\n";
+
+    historicoLeituras.forEach(r => {
+        csvConteudo += `${r.data},${r.hora},${r.temp},${r.ph},${r.tds},${r.turb}\n`;
+    });
+
+    const encodedUri = encodeURI(csvConteudo);
+    const link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", `relatorio_NEMO_${new Date().toISOString().slice(0,10)}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
 }
