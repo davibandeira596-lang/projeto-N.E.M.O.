@@ -56,10 +56,10 @@ h1, h2 {
     transform: translateY(-2px);
 }
 .btn-csv {
-    background-color: #2a9d8f;
+    background-color: #0077b6;
 }
 .btn-csv:hover {
-    background-color: #218378;
+    background-color: #005f8a;
 }
 .status {
     text-align: center;
